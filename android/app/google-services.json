@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "109518679962",
+    "project_id": "chatapplication-662ae",
+    "storage_bucket": "chatapplication-662ae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:109518679962:android:e5e395b2947a44887a9423",
+        "android_client_info": {
+          "package_name": "com.okanunlu.chat_application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "109518679962-bd7h7flelue76ikfnl0dfkqddf244po3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCkZ9Cud7yrEo2ZhWnv2Do0-Uxk1G88A8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "109518679962-bd7h7flelue76ikfnl0dfkqddf244po3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
