@@ -1,14 +1,13 @@
-import 'package:chat_application/helper/helperfunctions.dart';
+import 'package:chat_application/helper/helperFunctions.dart';
 import 'package:chat_application/services/auth.dart';
 import 'package:chat_application/services/database.dart';
-import 'package:chat_application/widgets/widget.dart';
+import 'package:chat_application/widgets/style.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
 class SignUp extends StatefulWidget {
   final Function toggle;
-
   SignUp(this.toggle);
 
   @override
@@ -16,12 +15,10 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  TextEditingController userNameTextEditingController =
-      new TextEditingController();
-  TextEditingController emailTextEditingController =
-      new TextEditingController();
-  TextEditingController passwordTextEditingController =
-      new TextEditingController();
+  TextEditingController userNameTextEditingController = new TextEditingController();
+  TextEditingController passwordTextEditingController = new TextEditingController();
+  //TextEditingController emailTextEditingController = new TextEditingController();
+  String phoneNumberText, countryText;
 
   bool isLoading = false;
 
@@ -30,7 +27,6 @@ class _SignUpState extends State<SignUp> {
   DatabaseMethods databaseMethods = new DatabaseMethods();
   HelperFunction helperFunction = new HelperFunction();
   final formKey = GlobalKey<FormState>();
-  String phoneNumberText;
 
   //PhoneAuthentication---------------------------------------------------------
   // ignore: non_constant_identifier_names
@@ -50,11 +46,10 @@ class _SignUpState extends State<SignUp> {
 
   // ignore: missing_return
   Future uploadUserInfo() {
-    HelperFunction.saveUserEmailSharedPreference(
-        emailTextEditingController.text);
-    HelperFunction.saveUserNameSharedPreference(
-        userNameTextEditingController.text);
+    //HelperFunction.saveUserEmailSharedPreference(emailTextEditingController.text);
+    HelperFunction.saveUserNameSharedPreference(userNameTextEditingController.text);
     HelperFunction.saveUserPhoneSharedPreference(phoneNumberText);
+    HelperFunction.saveUserCountrySharedPreference(countryText);
 
     setState(() {
       isLoading = true;
@@ -62,9 +57,11 @@ class _SignUpState extends State<SignUp> {
 
     Map<String, String> userInfoMap = {
       "name": userNameTextEditingController.text,
-      "email": emailTextEditingController.text,
+      //"email": emailTextEditingController.text,
       "phone": phoneNumberText
     };
+
+    // ignore: unnecessary_statements
     databaseMethods.uploadUserInfo(userInfoMap);
     HelperFunction.saveUserLoggedInSharedPreference(true);
   }
@@ -93,11 +90,11 @@ class _SignUpState extends State<SignUp> {
                             IntlPhoneField(
                               countryCodeTextColor: Colors.white,
                               dropDownArrowColor: Colors.white,
-                              decoration:
-                                  textFieldInputDecoration('Phone Number'),
+                              decoration: textFieldInputDecoration('Phone Number'),
                               initialCountryCode: 'TR',
                               onChanged: (phone) {
                                 phoneNumberText = phone.completeNumber;
+                                countryText = phone.countryCode;
                               },
                               style: simpleTextStyle(),
                             ),
@@ -113,11 +110,11 @@ class _SignUpState extends State<SignUp> {
                                 controller: userNameTextEditingController,
                                 style: simpleTextStyle(),
                                 decoration:
-                                    textFieldInputDecoration("username")),
-                            SizedBox(
+                                    textFieldInputDecoration("User Name")),
+                          /*SizedBox(
                               height: 4,
                             ),
-                            TextFormField(
+                           TextFormField(
                                 keyboardType: TextInputType.emailAddress,
                                 validator: (val) {
                                   return RegExp(
@@ -128,7 +125,7 @@ class _SignUpState extends State<SignUp> {
                                 },
                                 controller: emailTextEditingController,
                                 style: simpleTextStyle(),
-                                decoration: textFieldInputDecoration("email")),
+                                decoration: textFieldInputDecoration("email")),*/
                             SizedBox(
                               height: 4,
                             ),
@@ -142,7 +139,7 @@ class _SignUpState extends State<SignUp> {
                                 controller: passwordTextEditingController,
                                 style: simpleTextStyle(),
                                 decoration:
-                                    textFieldInputDecoration("password")),
+                                    textFieldInputDecoration("Password")),
                           ],
                         ),
                       ),
@@ -191,14 +188,14 @@ class _SignUpState extends State<SignUp> {
                               borderRadius: BorderRadius.circular(30)),
                           child: Text(
                             "Sign Up",
-                            style: mediumTextStyle(),
+                            style:  mediumTextStyle(),
                           ),
                         ),
                       ),
                       SizedBox(
                         height: 16,
                       ),
-                      Container(
+                      /*Container(
                         alignment: Alignment.center,
                         width: MediaQuery.of(context).size.width,
                         padding: EdgeInsets.symmetric(vertical: 20),
@@ -236,9 +233,9 @@ class _SignUpState extends State<SignUp> {
                             ),
                           ),
                         ],
-                      ),
+                      ),*/
                       SizedBox(
-                        height: 50,
+                        height: 80,
                       ),
                     ],
                   ),

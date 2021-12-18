@@ -1,6 +1,5 @@
-import 'package:chat_application/helper/helperfunctions.dart';
-import 'package:chat_application/models/user.dart';
-import 'package:chat_application/views/chatroomscreen.dart';
+import 'package:chat_application/helper/helperFunctions.dart';
+import 'package:chat_application/views/chatRoomScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -8,43 +7,6 @@ class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   HelperFunction helperFunction = new HelperFunction();
   String phoneNo, smsId, verificationId;
-
-  // ignore: deprecated_member_use
-  UserAuth _userFromUserCredential(UserCredential user) {
-    return user != null ? UserAuth(userId: user.user.uid) : null;
-  }
-
-  Future signInWithEmailAndPassword(String email, String password) async {
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-      return _userFromUserCredential(userCredential);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
-      }
-      return e.code;
-    }
-  }
-
-  Future signUpWithEmailAndPassword(String email, String password) async {
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-      return _userFromUserCredential(userCredential);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-      }
-      return e.code;
-    } catch (e) {
-      print(e);
-    }
-  }
 
   //PhoneAuthentication---------------------------------------------------------
   // ignore: missing_return
@@ -56,8 +18,11 @@ class AuthMethods {
           _auth
               .signInWithCredential(authCredential)
               .then((UserCredential result) {
-            Navigator.pushReplacement(
-                context, MaterialPageRoute(builder: (context) => ChatRoom()));
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => ChatRoom()),
+                  (Route<dynamic> route) => false,
+            );
             return "OK";
           }).catchError((e) {
             return "error";
@@ -85,15 +50,18 @@ class AuthMethods {
                   color: Colors.green,
                   onPressed: () {
                     // ignore: deprecated_member_use
-                    var _credential = PhoneAuthProvider.getCredential(
+                    var _credential = PhoneAuthProvider.credential(
                         verificationId: verificationId,
                         smsCode: _codeController.text.trim());
                     _auth
                         .signInWithCredential(_credential)
                         .then((UserCredential result) {
                       //Open chatRoomScreen
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => ChatRoom()));
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => ChatRoom()),
+                            (Route<dynamic> route) => false,
+                      );
                       return "OK";
                     }).catchError((e) {
                       return "error";
@@ -124,4 +92,5 @@ class AuthMethods {
       print(e.toString());
     }
   }
+
 }

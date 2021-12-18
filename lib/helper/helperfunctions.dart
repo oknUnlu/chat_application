@@ -4,8 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HelperFunction {
   static String sharedPreferenceUserLoggedInKey = "ISLOGGEDIN";
   static String sharedPreferenceUserNameKey     = "USERNAMEKEY";
+  static String sharedPreferencePhoneKey        = "USERPHONEKEY";
   static String sharedPreferenceUserEmailKey    = "USEREMAILKEY";
   static String sharedPreferenceUserPhoneKey    = "USERPHONEKEY";
+  static String sharedPreferenceUserCountryKey  = "USERCOUNTRYKEY";
 
   //saving data to SharedPreferences
   static Future<bool> saveUserLoggedInSharedPreference(
@@ -29,19 +31,34 @@ class HelperFunction {
     return await prefs.setString(sharedPreferenceUserPhoneKey, userPhone);
   }
 
+  static Future<bool> saveUserCountrySharedPreference(String userCountry) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return await prefs.setString(sharedPreferenceUserCountryKey, userCountry);
+  }
+
   //saving data from SharedPreferences
   static Future<bool> getUserLoggedInSharedPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getBool(sharedPreferenceUserLoggedInKey);
   }
 
-  static Future<String> getUserNameSharedPreference() async {
+  static Future<String> getUserPhoneSharedPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(sharedPreferenceUserNameKey);
+    return prefs.getString(sharedPreferencePhoneKey);
   }
 
   static Future<String> getUserEmailSharedPreference() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(sharedPreferenceUserEmailKey);
+  }
+
+  static Future<String> getUserCountrySharedPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(sharedPreferenceUserCountryKey);
+  }
+
+  static Future<String> getUserNameSharedPreference() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(sharedPreferenceUserNameKey);
   }
 }

@@ -2,26 +2,30 @@ name: chat_application
 description: A new ChatApplication.
 
 publish_to:
-version: 1.0.1
+version: 1.0.1+1
 
 environment:
-  sdk: ">=2.8.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  firebase_core: ^0.5.0
-  firebase_auth: ^0.18.3
-  cloud_firestore: ^0.14.3
-  firebase_storage: ^4.0.1
-  firebase_database: ^4.3.0
-  shared_preferences: ^0.5.12+4
+  firebase_core: ^1.1.0
+  firebase_auth: ^3.0.1
+  firebase_storage: ^8.0.5
+  shared_preferences: ^2.0.5
   fluttertoast: ^7.1.6
   google_sign_in: ^4.5.9
   contacts_service: ^0.4.6
-  permission_handler: ^5.1.0+2
   intl_phone_field: ^1.4.4
+  encrypt: ^5.0.1
+  flutter_local_notifications: ^5.0.0+4
+  firebase_messaging: ^10.0.5
+  firebase_database: ^7.2.0
+  permission_handler: ^8.1.4+2
+  cloud_firestore: ^2.5.0
+  uuid: ^3.0.5
 
 dev_dependencies:
   flutter_test:

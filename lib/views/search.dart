@@ -1,12 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_application/helper/constants.dart';
 import 'package:chat_application/services/database.dart';
-import 'package:chat_application/views/conversationscreen.dart';
-import 'package:chat_application/widgets/widget.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:chat_application/views/conversationScreen.dart';
+import 'package:chat_application/widgets/style.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:uuid/uuid.dart';
 
 const iOSLocalizedLabels = false;
 
@@ -105,50 +106,27 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
-//------------------------------------------------------------------------------
   DatabaseMethods databaseMethods = new DatabaseMethods();
   TextEditingController searchTextEditingController =
       new TextEditingController();
-  QuerySnapshot searchSnapshot;
-
-  /*Widget searchList() {
-    return searchSnapshot != null
-        ? ListView.builder(
-            // ignore: deprecated_member_use
-            itemCount: searchSnapshot.documents.length,
-            shrinkWrap: true,
-            itemBuilder: (context, index) {
-              return SearchTile(
-                // ignore: deprecated_member_use
-                userName: searchSnapshot.documents[index].data()["name"],
-                // ignore: deprecated_member_use
-                userEmail: searchSnapshot.documents[index].data()["email"],
-                // ignore: deprecated_member_use
-                userPhone: searchSnapshot.documents[index].data()["phone"],
-              );
-            })
-        : Container();
-  }*/
-
-  initiateSearch(BuildContext context) {
-    databaseMethods
-        .getUserByUsername(searchTextEditingController.text)
-        .then((val) {
-      setState(() {
-        searchSnapshot = val;
-      });
-    });
-  }
 
   // create chat room, send user to conversation screen,  push replacement
-  createChatRoomAndStartConversation({String userName}) {
-    if (userName != Constants.myName) {
-      String chatRoomId = getChatRoomId(userName, Constants.myName);
+  createChatRoomAndStartConversation(String userName, String phoneNumber) {
+    phoneNumber = phoneNumber.replaceAll(" ", "");
+    if(phoneNumber.substring(0,3) != Constants.countryCode){
+      phoneNumber = phoneNumber.substring(1,);
+      phoneNumber = Constants.countryCode + phoneNumber;
+    }
 
-      List<String> users = [userName, Constants.myName];
+    if (phoneNumber != Constants.myPhoneNumber) {
+      String chatRoomId = getChatRoomId(Constants.myPhoneNumber, phoneNumber);
+
+      List<String> myPhoneNumber = [Constants.myPhoneNumber, phoneNumber];
       Map<String, dynamic> chatRoomMap = {
-        "users": users,
-        "chatroomId": chatRoomId
+        "phones": myPhoneNumber,
+        "chatRoomId": chatRoomId,
+        "contactUsers": userName,
+        "lastMessage": {"content": '', "read": 'false', "timestamp": '',}
       };
       DatabaseMethods().createChatRoom(chatRoomId, chatRoomMap);
       Navigator.push(
@@ -156,50 +134,20 @@ class _SearchScreenState extends State<SearchScreen> {
           MaterialPageRoute(
               builder: (context) => ConversationScreen(chatRoomId)));
     } else {
-      print("You cannot send message to yourself");
+      showToast("You cannot send message to yourself");
     }
   }
-
-  // ignore: non_constant_identifier_names
-  Widget SearchTile({String userName, String userEmail, String userPhone}) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Row(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                userName,
-                style: mediumTextStyle(),
-              ),
-              Text(
-                userEmail,
-                style: mediumTextStyle(),
-              ),
-            ],
-          ),
-          Spacer(),
-          GestureDetector(
-            onTap: () {
-              createChatRoomAndStartConversation(userName: userName);
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                  color: Colors.blue, borderRadius: BorderRadius.circular(30)),
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                "Message",
-                style: mediumTextStyle(),
-              ),
-            ),
-          ),
-        ],
-      ),
+  void showToast(String message) {
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.redAccent,
+        textColor: Colors.white,
+        fontSize: 16.0
     );
   }
-
-//------------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     bool isSearching = searchController.text.isNotEmpty;
@@ -238,13 +186,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           Color color2 = baseColor[400];
                           return ListTile(
                             onTap: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      ContactDetailsPage(
-                                        c,
-                                        onContactDeviceSave:
-                                            contactOnDeviceHasBeenUpdated,
-                                      )));
+                              createChatRoomAndStartConversation(c.displayName, c.phones.toList()[0].value);
                             },
                             leading: (c.avatar != null && c.avatar.length > 0)
                                 ? CircleAvatar(
@@ -274,47 +216,6 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             )
           ])),
-      /*appBar: appBarMain(context),
-      body: Container(
-        child: Column(
-          children: [
-            Container(
-              color: Color(0x54FFFFFF),
-              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Row(
-                children: [
-                  Expanded(
-                      child: TextField(
-                        controller: searchTextEditingController,
-                        style: TextStyle(color: Colors.white),
-                        decoration: InputDecoration(
-                            hintText: "Search Username",
-                            hintStyle: TextStyle(color: Colors.white54),
-                            border: InputBorder.none),
-                      )),
-                  GestureDetector(
-                    onTap: () {
-                      initiateSearch();
-                    },
-                    child: Container(
-                        height: 40,
-                        width: 40,
-                        decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [
-                              const Color(0x35FFFFFF),
-                              const Color(0x35FFFFFF)
-                            ]),
-                            borderRadius: BorderRadius.circular(40)),
-                        padding: EdgeInsets.all(12),
-                        child: Image.asset("assets/images/search_white.png")),
-                  )
-                ],
-              ),
-            ),
-            searchList()
-          ],
-        ),
-      ),*/
     );
   }
 
@@ -527,9 +428,13 @@ class ItemsTile extends StatelessWidget {
 }
 
 getChatRoomId(String a, String b) {
+  DatabaseMethods databaseMethods = new DatabaseMethods();
+  databaseMethods.getChatRoomsId(a);
   if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
     return "$b\_$a";
   } else {
     return "$a\_$b";
   }
 }
+
+
